@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class HandController : MonoBehaviour
 {
+
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float handSpeed = 0.1f;
     [SerializeField] private Vector2 moveLimits = new Vector2(1f, 1f);
-
+    private float originalSpeed;
+    [SerializeField] private GameObject popup;
     [SerializeField] private GameObject report;
     [SerializeField] private GameObject decisiones;
     private Vector3 originalReportPosition;
@@ -18,6 +20,7 @@ public class HandController : MonoBehaviour
 
     void Start()
     {
+        originalSpeed = handSpeed;
         if (mainCamera == null)
         {
             mainCamera = Camera.main;
@@ -81,20 +84,34 @@ public class HandController : MonoBehaviour
                 {
                     ToggleReport();
                 }
-                else if (hit.collider.CompareTag("Gachas"))
-                {
-                    ToggleDecisiones();
-                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Decisiones");
+            ToggleDecisiones();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (decisiones != null && decisiones.transform.position != originalDecisionesPosition)
+            {
+                StartCoroutine(MoveDecisiones(originalDecisionesPosition, new Vector3(57f, 57f, 57f), 0.3f));
+                FindObjectOfType<DecisionButtons>().SetCanHandleInput(false);
+                FindObjectOfType<DecisionButtons>().ResetSelection();
+                handSpeed = originalSpeed;
             }
         }
     }
+
     private void ToggleReport()
     {
         if (report != null)
         {
             if (report.transform.position == originalReportPosition)
             {
-                StartCoroutine(MoveReport(mainCamera.transform.position + mainCamera.transform.forward * 2f, new Vector3(100f, 100f, 100f), 0.3f));
+                StartCoroutine(MoveReport(mainCamera.transform.position + mainCamera.transform.forward * 2f, new Vector3(80f, 80f, 80f), 0.3f));
             }
             else
             {
@@ -110,14 +127,10 @@ public class HandController : MonoBehaviour
             if (decisiones.transform.position == originalDecisionesPosition)
             {
                 StartCoroutine(MoveDecisiones(mainCamera.transform.position + mainCamera.transform.forward * 2f, new Vector3(100f, 100f, 100f), 0.3f));
-                isXYMovement = true;
-                transform.position = new Vector3(-0.16f, 0.3f, -9.07f);
-            }
-            else
-            {
-                StartCoroutine(MoveDecisiones(originalDecisionesPosition, new Vector3(65f, 65f, 65f), 0.3f));
-                transform.position = new Vector3(0f, 0f, -7f);
-                isXYMovement = false;
+                transform.position = new Vector3(0f, 0f, -9f);
+                handSpeed = 0f;
+                FindObjectOfType<DecisionButtons>().SetCanHandleInput(true);
+                FindObjectOfType<DecisionButtons>().ResetSelection();
             }
         }
     }

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Decision 3
   m_EditorClassIdentifier: 
   decisionName: raisePriceDecision
-  cost: 25
-  satisfactionImpact: -15
+  cost: 20
+  satisfactionImpact: -20
